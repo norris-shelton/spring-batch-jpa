@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+    <batch:job id="carJob">
+        <batch:step id="step1">
+            <batch:tasklet>
+                <batch:chunk reader="itemReader" writer="itemWriter" commit-interval="10"/>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+</beans>

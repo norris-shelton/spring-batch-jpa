@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <import resource="classpath:META-INF/spring/batchContext.xml"/>
+
+    <context:component-scan base-package="com.javaninja.batch"/>
+
+
+    <!--This repository is only really intended for use in testing and rapid prototyping-->
+    <bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean"/>
+
+    <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"
+          p:jobRepository-ref="jobRepository"/>
+
+
+
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
+          p:driverClassName="com.mysql.jdbc.Driver"
+          p:url="jdbc:mysql://10.20.13.53/cam?zeroDateTimeBehavior=convertToNull"
+          p:username="usr_ig_dev"
+          p:password="igaming_developer"/>
+
+    <!-- JPA EntityManagerFactory configuration -->
+    <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+          p:dataSource-ref="dataSource"
+          p:packagesToScan="com.javaninja.batch"
+          p:jpaVendorAdapter-ref="jpaVendorAdapter"/>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"/>
+
+    <!-- ItemReader which reads data from the database -->
+    <bean id="itemReader" class="org.springframework.batch.item.database.JpaPagingItemReader"
+          p:entityManagerFactory-ref="entityManagerFactory"
+          p:queryString="SELECT s FROM CamAffiliateEntity s"/>
+
+    <!-- ItemWriter which writes the data to the database -->
+    <bean id="itemWriter" class="org.springframework.batch.item.database.JpaItemWriter"
+        p:entityManagerFactory-ref="entityManagerFactory"/>
+
+</beans>
